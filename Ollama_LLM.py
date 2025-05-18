@@ -3,11 +3,17 @@ st.set_page_config(page_title="ChatSphere", layout="centered")
 
 from langchain_core.prompts import ChatPromptTemplate 
 from langchain_core.output_parsers import StrOutputParser
-from langchain_ollama import OllamaLLM
+from langchain.llms import HuggingFaceHub
 from datetime import datetime
 import time
 import base64
-import speech_recognition as sr
+
+# Optional: If microphone support is needed and supported locally
+try:
+    import speech_recognition as sr
+    mic_available = True
+except ModuleNotFoundError:
+    mic_available = False
 
 st.title("💬 ChatSphere: Your AI-Powered Conversational Assistant")
 
@@ -46,7 +52,16 @@ if "messages" not in st.session_state:
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 
-llm = OllamaLLM(model="llama2")
+# ✅ Hugging Face API Key (securely stored in Streamlit secrets)
+HUGGINGFACEHUB_API_TOKEN = st.secrets["huggingface_api_key"]
+
+# ✅ LLM using Hugging Face model
+llm = HuggingFaceHub(
+    repo_id="google/flan-t5-large",  # you can try other models
+    model_kwargs={"temperature": 0.5, "max_length": 256},
+    huggingfacehub_api_token=HUGGINGFACEHUB_API_TOKEN
+)
+
 output_parser = StrOutputParser()
 prompt = ChatPromptTemplate.from_messages([
     ("system", "You are a helpful AI assistant. Your name is ChatSphere."),
@@ -65,6 +80,10 @@ def format_message(sender, message):
     """
 
 def listen_to_mic():
+    if not mic_available:
+        st.warning("🎙️ Microphone support is not available in this environment.")
+        return ""
+    
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         st.info("🎙️ Listening... speak now!")
@@ -87,7 +106,6 @@ def generate_response():
                 replacements = {
                     "*smiles*": "😊",
                     "*smiling*": "😊",
-                    "*smiling face*": "😊",
                     "*laughs*": "😂",
                     "*nods*": "👍",
                     "*sighs*": "😌",
@@ -97,7 +115,6 @@ def generate_response():
                     "*smiling emoji*": "😊",
                     "*adjusts aviator sunglasses*": "😎",
                     "*winks*": "😉",
-
                 }
                 for pattern, emoji in replacements.items():
                     response = response.replace(pattern, emoji)
@@ -113,7 +130,7 @@ def generate_response():
 if st.sidebar.button("🗑️ Reset Chat"):
     st.session_state.messages = []
 
-if st.sidebar.button("🎙️ Speak Query"):
+if mic_available and st.sidebar.button("🎙️ Speak Query"):
     spoken_text = listen_to_mic()
     if spoken_text:
         st.session_state.user_input = spoken_text
@@ -123,7 +140,7 @@ st.text_input("Please enter your queries...", key="user_input", on_change=genera
 
 st.markdown("---")
 
-# ✅ Only one clean rendering of messages
+# ✅ Chat message rendering
 for sender, message in st.session_state.messages:
     st.markdown(format_message(sender, message), unsafe_allow_html=True)
 
