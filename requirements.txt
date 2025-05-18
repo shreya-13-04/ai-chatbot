@@ -5,4 +5,4 @@ langchain_core
 langchain_ollama
 ollama
 speechrecognition
-huggingface_hub
+
