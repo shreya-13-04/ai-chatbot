@@ -123,7 +123,7 @@ st.text_input("Please enter your queries...", key="user_input", on_change=genera
 
 st.markdown("---")
 
-# ✅ Only one clean rendering of messages
+
 for sender, message in st.session_state.messages:
     st.markdown(format_message(sender, message), unsafe_allow_html=True)
 
