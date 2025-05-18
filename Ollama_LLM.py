@@ -8,7 +8,7 @@ from datetime import datetime
 import time
 import base64
 
-# Optional: If microphone support is needed and supported locally
+
 try:
     import speech_recognition as sr
     mic_available = True
@@ -52,12 +52,11 @@ if "messages" not in st.session_state:
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 
-# ✅ Hugging Face API Key (securely stored in Streamlit secrets)
+
 HUGGINGFACEHUB_API_TOKEN = st.secrets["huggingface_api_key"]
 
-# ✅ LLM using Hugging Face model
 llm = HuggingFaceHub(
-    repo_id="google/flan-t5-large",  # you can try other models
+    repo_id="tiiuae/falcon-7b-instruct", 
     model_kwargs={"temperature": 0.5, "max_length": 256},
     huggingfacehub_api_token=HUGGINGFACEHUB_API_TOKEN
 )
@@ -140,7 +139,7 @@ st.text_input("Please enter your queries...", key="user_input", on_change=genera
 
 st.markdown("---")
 
-# ✅ Chat message rendering
+
 for sender, message in st.session_state.messages:
     st.markdown(format_message(sender, message), unsafe_allow_html=True)
 
