@@ -56,9 +56,10 @@ if "user_input" not in st.session_state:
 HUGGINGFACEHUB_API_TOKEN = st.secrets["huggingface_api_key"]
 
 llm = HuggingFaceHub(
-    repo_id="tiiuae/falcon-7b-instruct", 
-    model_kwargs={"temperature": 0.5, "max_length": 256},
+    repo_id="google/flan-t5-large", 
     huggingfacehub_api_token=HUGGINGFACEHUB_API_TOKEN
+    model_kwargs={"temperature": 0.5, "max_length": 256},
+    
 )
 
 output_parser = StrOutputParser()
