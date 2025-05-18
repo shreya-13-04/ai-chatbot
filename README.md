@@ -77,3 +77,4 @@ Run the app:
 ```bash
 python -m streamlit run Ollama_LLM.py
 ```
+> 🗣️ Visit the localhost in your browser to chat!
