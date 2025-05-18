@@ -1,16 +1,13 @@
 import streamlit as st
 st.set_page_config(page_title="ChatSphere", layout="centered")
 
-from huggingface_hub import InferenceClient
+from langchain_core.prompts import ChatPromptTemplate 
+from langchain_core.output_parsers import StrOutputParser
+from langchain_ollama import OllamaLLM
 from datetime import datetime
 import time
 import base64
-
-try:
-    import speech_recognition as sr
-    mic_available = True
-except ModuleNotFoundError:
-    mic_available = False
+import speech_recognition as sr
 
 st.title("💬 ChatSphere: Your AI-Powered Conversational Assistant")
 
@@ -49,8 +46,13 @@ if "messages" not in st.session_state:
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 
-HF_TOKEN = st.secrets["huggingface_api_key"]
-client = InferenceClient(model="bigscience/bloom-560m", token=HF_TOKEN)
+llm = OllamaLLM(model="llama2")
+output_parser = StrOutputParser()
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "You are a helpful AI assistant. Your name is ChatSphere."),
+    ("user", "User query: {query}")
+])
+chain = prompt | llm | output_parser
 
 def format_message(sender, message):
     timestamp = datetime.now().strftime("%H:%M:%S")
@@ -63,20 +65,16 @@ def format_message(sender, message):
     """
 
 def listen_to_mic():
-    if not mic_available:
-        st.warning("🎧 Microphone support is not available in this environment.")
-        return ""
-
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
-        st.info("🎧 Listening... speak now!")
+        st.info("🎙️ Listening... speak now!")
         audio = recognizer.listen(source)
     try:
-        text = recognizer.recognize_google(audio)
+        text = recognizer.recognize_google(audio)  
         st.success("✅ Transcribed!")
         return text
     except Exception as e:
-        st.error(f"Error: {e}")
+        st.error(f"Error: {e}")  
         return ""
 
 def generate_response():
@@ -84,11 +82,12 @@ def generate_response():
     if user_input:
         with st.spinner("Generating response..."):
             try:
-                response = client.text_generation(user_input, max_new_tokens=256, temperature=0.5)
+                response = chain.invoke({"query": user_input})
 
                 replacements = {
                     "*smiles*": "😊",
                     "*smiling*": "😊",
+                    "*smiling face*": "😊",
                     "*laughs*": "😂",
                     "*nods*": "👍",
                     "*sighs*": "😌",
@@ -98,6 +97,7 @@ def generate_response():
                     "*smiling emoji*": "😊",
                     "*adjusts aviator sunglasses*": "😎",
                     "*winks*": "😉",
+
                 }
                 for pattern, emoji in replacements.items():
                     response = response.replace(pattern, emoji)
@@ -113,7 +113,7 @@ def generate_response():
 if st.sidebar.button("🗑️ Reset Chat"):
     st.session_state.messages = []
 
-if mic_available and st.sidebar.button("🎧 Speak Query"):
+if st.sidebar.button("🎙️ Speak Query"):
     spoken_text = listen_to_mic()
     if spoken_text:
         st.session_state.user_input = spoken_text
@@ -123,6 +123,7 @@ st.text_input("Please enter your queries...", key="user_input", on_change=genera
 
 st.markdown("---")
 
+# ✅ Only one clean rendering of messages
 for sender, message in st.session_state.messages:
     st.markdown(format_message(sender, message), unsafe_allow_html=True)
 
