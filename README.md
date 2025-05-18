@@ -4,7 +4,6 @@ ChatSphere is a privacy-first AI chatbot that runs **entirely on your local mach
 
 ---
 
-
 ## 🚀 Features
 
 - 🤖 Chat with open-source LLMs (e.g., LLaMA 2, Mistral)
@@ -16,36 +15,45 @@ ChatSphere is a privacy-first AI chatbot that runs **entirely on your local mach
 - ✅ Emoji replacements for expressive replies
 
 ---
-##🧠 Models You Can Use
+
+## 🧠 Models You Can Use
+
 You can use any Ollama-supported model, for example:
 
--ollama run mistral
--ollama run llama2
--ollama run gemma
-Just make sure the model is running when you launch the app.
+- `ollama run mistral`
+- `ollama run llama2`
+- `ollama run gemma`
+
+✅ Just make sure the model is running when you launch the app.
 
 ---
-##📢 Voice Support 
+
+## 📢 Voice Support
 
 If you have a microphone and want to use voice input:
 
--Make sure the speech_recognition package is installed
--Use the 🎧 Speak Query button in the sidebar
+- Make sure the `speech_recognition` package is installed
+- Use the 🎧 **Speak Query** button in the sidebar
 
-Note: Microphone input may not work in cloud-hosted environments.
----
-##📌 Notes
-💡 This chatbot does not require an API key if you're using Ollama.
-🌐 This app is meant to run locally only and is not deployed to Streamlit Cloud.
-🔒 All conversations remain on your device — perfect for privacy-focused applications.
+> ⚠️ Note: Microphone input may not work in cloud-hosted environments.
 
 ---
-##🤝 Contributions
+
+## 📌 Notes
+
+- 💡 This chatbot does **not require an API key** if you're using Ollama.
+- 🌐 This app is meant to run **locally only** and is **not deployed** to Streamlit Cloud.
+- 🔒 All conversations remain on your device — perfect for privacy-focused applications.
+
+---
+
+## 🤝 Contributions
+
 Contributions are welcome! Feel free to:
 
--Suggest improvements
--Add support for more models
--Improve UI or voice features
+- Suggest improvements
+- Add support for more models
+- Improve UI or voice features
 
 ---
 
