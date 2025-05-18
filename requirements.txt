@@ -1,6 +1,0 @@
-streamlit
-langchain-core
-langchain-community
-langchain-ollama
-speechrecognition
-ollama
